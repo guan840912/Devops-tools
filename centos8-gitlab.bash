@@ -1,4 +1,7 @@
 #!/bin/bash
+mkdir -p /home/gitlab/gitlab-docker-compose/{config,log,data}
+sudo setenforce 0
+getenforce
 function dockercompose {
 cat << EOF
 version: "3.7"
@@ -20,14 +23,13 @@ services:
       - "443:443"
       - "2022:22"
     volumes:
-      - "/var/lib/docker/gitlab-docker-compose/config:/etc/gitlab:Z"
-      - "/var/lib/docker/gitlab-docker-compose/logs:/var/log/gitlab:Z"
-      - "/var/lib/docker/gitlab-docker-compose/data:/var/opt/gitlab:Z"
+      - "/home/gitlab/gitlab-docker-compose/config:/etc/gitlab:Z"
+      - "/home/gitlab/gitlab-docker-compose/logs:/var/log/gitlab:Z"
+      - "/home/gitlab/gitlab-docker-compose/data:/var/opt/gitlab:Z"
 EOF
 }
-mkdir -p /var/lib/docker/gitlab-docker-compose/{config,log,data}
 
-ls -l /var/lib/docker/gitlab-docker-compose/
+
 dockercompose > docker-compose.yml
 dnf install -y curl
 curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose

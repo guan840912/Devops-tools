@@ -1,4 +1,7 @@
 #!/bin/bash
+sudo setenforce 0
+getenforce
+
 function dockercompose {
 cat << EOF
 version: "3.7"
@@ -13,7 +16,7 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - /var/lib/docker/nexus/nexus-data:/nexus-data:z
+      - /home/nexus/nexus-data:/nexus-data:Z
     logging:
       driver: "json-file"
       options:
@@ -21,9 +24,10 @@ services:
         max-file: "4"
 EOF
 }
-mkdir -p /var/lib/docker/nexus/nexus-data
+mkdir -p /home/nexus/nexus-data
+chown 200:200 -R /home/nexus
 
-ls -l /var/lib/docker/nexus/nexus-data
+ls -l /home/nexus/nexus-data
 dockercompose > docker-compose.yml
 dnf install -y curl
 curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
